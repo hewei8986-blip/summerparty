@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summer Party · 课程结课项目</title>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",Arial,sans-serif}
+    body{background:#fefefe;color:#333;overflow-x:hidden}
+
+    /* ===== Loading ===== */
+    #loader{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:linear-gradient(135deg,#ffd93d,#ff6b9d);
+      display:flex;align-items:center;justify-content:center;
+      z-index:2000;color:#fff;font-size:22px;letter-spacing:2px;
+    }
+    .spinner{
+      width:60px;height:60px;border:6px solid rgba(255,255,255,.4);
+      border-top:6px solid #fff;border-radius:50%;
+      animation:spin 1s linear infinite;margin-bottom:20px
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ===== Fade & Animations ===== */
+    .fade-in{opacity:0;transform:translateY(30px);transition:.8s}
+    .fade-in.show{opacity:1;transform:translateY(0)}
+    .card-content p{opacity:0;transform:translateX(-20px);transition:.6s .2s}
+    .card-content p.show{opacity:1;transform:translateX(0)}
+
+    /* ===== Hero ===== */
+    .hero{
+      position:relative;padding:90px 20px 120px;
+      background:linear-gradient(135deg,#ffd93d,#ff6b9d);
+      color:#fff;text-align:center
+    }
+    .hero h1{font-size:38px;letter-spacing:5px;margin-bottom:10px}
+    .hero p{font-size:18px}
+
+    /* ===== Wave ===== */
+    .wave{position:absolute;bottom:-1px;left:0;width:100%;height:120px}
+
+    /* ===== Music Toggle ===== */
+    .music-btn{
+      position:fixed;right:20px;bottom:20px;
+      background:#ff6b9d;color:#fff;
+      border-radius:50%;width:56px;height:56px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:26px;cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+      z-index:1500;transition:.4s
+    }
+    .music-btn.playing{transform:rotate(360deg) scale(1.1)}
+
+    /* ===== Layout ===== */
+    .container{max-width:1000px;margin:auto;padding:50px 20px}
+
+    /* ===== Card ===== */
+    .card{
+      background:#fff;border-radius:18px;
+      padding:28px;margin-bottom:32px;
+      position:relative;transition:.4s;box-shadow:0 6px 15px rgba(0,0,0,.1)
+    }
+    .card:hover{
+      transform:translateY(-12px) scale(1.03);
+      box-shadow:0 20px 45px rgba(0,0,0,.2)
+    }
+    .decoration{
+      position:absolute;right:20px;top:20px;
+      font-size:42px;opacity:.15
+    }
+    .section-title{
+      font-size:24px;margin-bottom:16px;color:#ff6b9d
+    }
+
+    /* ===== CTA ===== */
+    .cta{text-align:center;margin-top:50px}
+    .cta-btn{
+      display:inline-block;padding:16px 42px;
+      background:linear-gradient(135deg,#ff6b9d,#ffd93d);
+      color:#fff;font-size:18px;border:none;border-radius:30px;
+      text-decoration:none;font-weight:bold;cursor:pointer;
+      transition:.3s;position:relative;overflow:hidden
+    }
+    .cta-btn::before{
+      content:"";position:absolute;top:50%;left:50%;width:0;height:0;
+      background:rgba(255,255,255,.3);border-radius:50%;transform:translate(-50%,-50%);
+      transition:.6s
+    }
+    .cta-btn:active::before{width:300px;height:300px}
+
+    /* ===== Modal ===== */
+    .modal{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;
+      z-index:1200
+    }
+    .modal-content{
+      background:#fff;padding:32px;border-radius:20px;width:90%;max-width:440px;
+      text-align:center;animation:pop .4s ease
+    }
+    @keyframes pop{from{transform:scale(.7);opacity:0} to{transform:scale(1);opacity:1}}
+    .close-btn{margin-top:22px;color:#ff6b9d;font-weight:bold;cursor:pointer}
+
+    /* ===== Responsive ===== */
+    @media (max-width:768px){
+      .hero{padding:70px 15px 90px}
+      .hero h1{font-size:32px}
+      .hero p{font-size:16px}
+      .container{padding:30px 15px}
+      .card{padding:20px;margin-bottom:24px}
+      .section-title{font-size:22px}
+      .cta-btn{padding:14px 32px;font-size:16px}
+      .modal-content{padding:24px;width:95%}
+      .music-btn{right:15px;bottom:15px;width:50px;height:50px;font-size:24px}
+    }
+
+    @media (max-width:480px){
+      .hero h1{font-size:28px;letter-spacing:3px}
+      .hero p{font-size:15px}
+      .section-title{font-size:20px}
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Loading -->
+<div id="loader">
+  <div>
+    <div class="spinner"></div>
+    正在进入夏日派对...
+  </div>
+</div>
+
+<!-- Music -->
+<div class="music-btn" id="musicBtn">🎵</div>
+<audio id="bgm" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f8c89b3d3.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Hero -->
+<div class="hero fade-in">
+  <h1>SUMMER PARTY</h1>
+  <p>🌊 沙滩 · 🍉 西瓜 · ☀️ 夏日狂欢</p>
+  <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <path fill="#ffffff" d="M0,60 C120,90 240,30 360,40 480,50 600,100 720,90 840,80 960,30 1080,40 1200,50 1320,80 1440,60 L1440,120 L0,120 Z"></path>
+  </svg>
+</div>
+
+<div class="container">
+
+  <div class="card fade-in">
+    <div class="decoration">🏖️</div>
+    <h2 class="section-title">📅 活动详情</h2>
+    <div class="card-content">
+      <p><strong>日期：</strong>2024年7月20日（星期六）</p>
+      <p><strong>时间：</strong>14:00 - 20:00</p>
+      <p><strong>地点：</strong>阳光海滩度假村 · 海滨大道888号</p>
+      <p><strong>费用：</strong><span style="color:#ff6b9d;font-weight:bold;">免费入场（含餐饮）</span></p>
+    </div>
+  </div>
+
+  <div class="card fade-in">
+    <div class="decoration">🍉</div>
+    <h2 class="section-title">🎉 精彩活动</h2>
+    <div class="card-content">
+      <p>沙滩排球 / 西瓜挑战 / BBQ / DJ 派对 / 日落摄影</p>
+    </div>
+  </div>
+
+  <div class="card fade-in">
+    <div class="decoration">📧</div>
+    <h2 class="section-title">📞 联系方式</h2>
+    <div class="card-content">
+      <p>📧 Email：heleleyao@outlook.com</p>
+      <p>📱 电话：15080797891</p>
+      <p>💬 微信：Leah6868Le</p>
+    </div>
+  </div>
+
+  <div class="cta fade-in">
+    <button class="cta-btn" onclick="openModal()">🎊 立即报名</button>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>🌴 报名成功</h2>
+    <p style="margin-top:16px">我们将通过以下方式与您联系：</p>
+    <p style="margin-top:10px">📧 heleleyao@outlook.com</p>
+    <p>📱 15080797891</p>
+    <p>💬 Leah6868Le</p>
+    <div class="close-btn" onclick="closeModal()">关闭</div>
+  </div>
+</div>
+
+<script>
+  // Loading
+  window.onload = () => {
+    setTimeout(() => {
+      document.getElementById("loader").style.display = "none";
+    }, 1200);
+  }
+
+  // Fade-in
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+        // 卡片内逐行动画
+        const ps = entry.target.querySelectorAll('.card-content p');
+        ps.forEach((p, i) => {
+          setTimeout(() => p.classList.add("show"), i * 150);
+        });
+      }
+    });
+  });
+  document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
+
+  // Modal
+  function openModal() { document.getElementById("modal").style.display = "flex"; }
+  function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+  // Music
+  let playing = false;
+  const musicBtn = document.getElementById("musicBtn");
+  const bgm = document.getElementById("bgm");
+
+  musicBtn.onclick = () => {
+    if (!playing) {
+      bgm.play().catch(() => {}); // 微信可能需用户交互
+      playing = true;
+      musicBtn.classList.add("playing");
+    } else {
+      bgm.pause();
+      playing = false;
+      musicBtn.classList.remove("playing");
+    }
+  }
+</script>
+
+</body>
+</html>
